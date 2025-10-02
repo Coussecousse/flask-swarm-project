@@ -66,6 +66,7 @@ def get_items():
     
     cur.close()
     conn.close()
+    
 
     # Cache for 60 seconds (Time To Live = 60s)
     redis_client.setex('items', 60, str(items))

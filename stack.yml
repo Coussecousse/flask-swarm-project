@@ -25,13 +25,14 @@ services:
       - db_password # Injecte le secret dans le conteneur
     networks:
       - backend
+      - frontend
     depends_on:
       - db
       - redis
 
   # 2. Service Base de Données (PostgreSQL)
   db:
-    image: postgres:16-alpine
+    image: flask-db:latest
     deploy:
       replicas: 1
       placement:
@@ -49,25 +50,6 @@ services:
       - db_data:/var/lib/postgresql/data # Persistance des données
     networks:
       - backend
-    # Script d'initialisation SQL : création de la table et insertion de données
-    command: >
-      sh -c "
-      docker-entrypoint.sh postgres &
-      sleep 10 &&
-      PGPASSWORD=$$(cat /run/secrets/db_password) psql -U postgres -d flask_db -c '
-      CREATE TABLE IF NOT EXISTS items (
-      id SERIAL PRIMARY KEY,
-      name VARCHAR(255) NOT NULL,
-      description TEXT,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-      INSERT INTO items (name, description) VALUES
-      (''Sample Item 1'', ''This is a sample item''),
-      (''Sample Item 2'', ''Another sample item''),
-      (''Sample Item 3'', ''Yet another sample'')
-      ON CONFLICT DO NOTHING;
-      ' || wait
-      "
 
   # 3. Service Cache (Redis)
   redis:
@@ -95,7 +77,8 @@ networks:
   backend:
     driver: overlay # Réseau isolé pour les services internes
   frontend:
-    driver: overlay # Réseau pour le Frontend (potentiellement exposé)
+    driver: overlay
+    attachable: true # Allows external access
 
 volumes:
   db_data: # Volume persistant pour la base de données
