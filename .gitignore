@@ -1,0 +1,19 @@
+# Dépendances Python
+__pycache__/
+*.pyc
+.venv/
+
+# Données et Logs
+*.log
+db_data/
+volumes/
+data/
+
+# Fichiers sensibles ou binaires (non versionnés)
+# N'ajoutez JAMAIS de secrets en texte clair ici si vous les créez comme fichiers !
+# Les fichiers d'entrée pour les secrets Swarm doivent être exclus
+secrets/db_password.txt 
+
+# Système
+.DS_Store
+Thumbs.db
