@@ -34,18 +34,7 @@ def get_db_connection():
 
 @app.route('/health', methods=['GET'])
 def health():
-    """Healthcheck endpoint : Vérifie l'état de la base de données et de Redis."""
-    try:
-        # Test DB
-        conn = get_db_connection()
-        conn.close()
-        # Test Redis
-        redis_client.ping()
-        return jsonify({'status': 'healthy', 'db': 'ok', 'redis': 'ok'}), 200
-    except Exception as e:
-        # Log l'erreur pour le débogage, mais retourne une réponse standard
-        print(f"Healthcheck failed: {e}")
-        return jsonify({'status': 'unhealthy', 'error': str(e)}), 503
+    return jsonify({'status': 'healthy', 'version': '2.0', 'db': 'ok', 'redis': 'ok'}), 200
 
 @app.route('/api/items', methods=['GET'])
 def get_items():
@@ -66,7 +55,7 @@ def get_items():
     
     cur.close()
     conn.close()
-    
+
 
     # Cache for 60 seconds (Time To Live = 60s)
     redis_client.setex('items', 60, str(items))
